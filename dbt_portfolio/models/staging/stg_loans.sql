@@ -7,4 +7,4 @@ SELECT loan_id,
   interest_rate,
   app_score,
   status
-FROM { { ref('loans') } }
+FROM {{ ref('loans') }}

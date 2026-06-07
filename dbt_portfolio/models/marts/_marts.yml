@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: mart_loan_dpd_snapshot
+    description: "Per-loan DPD and bucket as of var('as_of_date')."
+    columns:
+      - name: loan_id
+        tests: [not_null, unique]
+      - name: dpd
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: dpd_bucket
+        tests:
+          - accepted_values:
+              values: ["0", "1-30", "31-60", "60+"]
+
+  - name: mart_portfolio_health
+    description: "Segment-level KPIs (delinquency, 60+, default)."
+    columns:
+      - name: segment
+        tests: [not_null, unique]
+      - name: delinquency_rate
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+
+  - name: mart_vintage_curve
+    description: "Cumulative delinquency by cohort x MOB."
+    columns:
+      - name: delinquency_rate
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+
+  - name: mart_rolling_collection
+    description: "Daily + 30-row rolling cash collected."
+    columns:
+      - name: collection_date
+        tests: [not_null, unique]

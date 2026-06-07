@@ -5,4 +5,4 @@ SELECT payment_id,
   NULLIF(paid_date, '') IS NOT NULL AS is_paid,
   amount_due,
   amount_paid
-FROM { { ref('repayments') } }
+FROM {{ ref('repayments') }}

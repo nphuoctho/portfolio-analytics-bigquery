@@ -3,4 +3,4 @@ SELECT customer_id,
   join_date,
   credit_limit,
   credit_score
-FROM { { ref('customers') } }
+FROM {{ ref('customers') }}

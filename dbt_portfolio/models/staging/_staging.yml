@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned customer dimension."
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+
+  - name: stg_loans
+    description: "Cleaned loans with derived cohort_month."
+    columns:
+      - name: loan_id
+        tests: [not_null, unique]
+      - name: cohort_month
+        tests: [not_null]
+
+  - name: stg_repayments
+    description: "Cleaned repayment schedule; empty paid_date normalised to NULL."
+    columns:
+      - name: payment_id
+        tests: [not_null, unique]
+      - name: is_paid
+        tests: [not_null]
