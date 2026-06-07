@@ -1,0 +1,42 @@
+version: 2
+
+# Schema tests on the raw seed layer: primary keys unique+not_null,
+# foreign keys reference their parent, categoricals limited to known values.
+seeds:
+  - name: customers
+    description: "Raw customer master (one row per customer)."
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: segment
+        tests:
+          - accepted_values:
+              values: ["prime", "near_prime", "subprime"]
+
+  - name: loans
+    description: "Raw loans (one customer takes 1..N loans)."
+    columns:
+      - name: loan_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+      - name: status
+        tests:
+          - accepted_values:
+              values: ["default", "closed", "active"]
+
+  - name: repayments
+    description: "Raw repayment schedule (one row per installment)."
+    columns:
+      - name: payment_id
+        tests: [not_null, unique]
+      - name: loan_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('loans')
+              field: loan_id

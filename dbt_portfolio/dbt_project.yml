@@ -1,0 +1,61 @@
+# dbt project config. Maps folders, sets the analysis cut-off date, and
+# declares materializations: staging = lightweight views, marts = physical tables.
+name: 'dbt_portfolio'
+version: '1.0.0'
+config-version: 2
+
+# Must match the profile name in ~/.dbt/profiles.yml
+profile: 'dbt_portfolio'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Point-in-time cut-off. Every mart computes "as of" this date so we never
+# look into the future (no data leakage in vintage / DPD / roll-rate).
+vars:
+  as_of_date: '2025-04-15'
+
+models:
+  dbt_portfolio:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
+
+# Explicit seed column types so BigQuery doesn't guess. Note: paid_date stays
+# STRING on purpose — it contains empty strings for unpaid installments, which
+# would break a DATE load. Staging converts "" -> NULL then casts to DATE.
+seeds:
+  dbt_portfolio:
+    customers:
+      +column_types:
+        customer_id: STRING
+        segment: STRING
+        join_date: DATE
+        credit_limit: INT64
+        credit_score: INT64
+    loans:
+      +column_types:
+        loan_id: STRING
+        customer_id: STRING
+        amount: INT64
+        issue_date: DATE
+        term_months: INT64
+        interest_rate: FLOAT64
+        app_score: INT64
+        status: STRING
+    repayments:
+      +column_types:
+        payment_id: STRING
+        loan_id: STRING
+        due_date: DATE
+        paid_date: STRING
+        amount_due: INT64
+        amount_paid: INT64
