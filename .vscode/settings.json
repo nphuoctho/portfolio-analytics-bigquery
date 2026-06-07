@@ -1,0 +1,9 @@
+{
+  "//": "dbt .sql files contain Jinja ({{ ref() }}). Generic SQL formatters insert spaces that break it, so disable format-on-save for SQL here.",
+  "[sql]": {
+    "editor.formatOnSave": false
+  },
+  "files.associations": {
+    "*.sql": "jinja-sql"
+  }
+}
