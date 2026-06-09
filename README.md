@@ -10,7 +10,7 @@ independent Python ground truth.
 > quyết định (DPD, vintage, rolling collection, KPI theo segment), dựng bằng
 > SQL window functions trên BigQuery + dbt, đối chiếu với bản tính Python độc lập.
 
-**Live links** · 📊 Dashboard: _(Looker Studio — add link)_ · 📚 dbt docs: _(GitHub Pages — add link)_
+**Live links** · 📊 Dashboard: https://datastudio.google.com/s/osH2qKIIang · 📚 dbt docs: _(GitHub Pages — add link)_
 
 ---
 
