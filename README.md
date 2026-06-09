@@ -1,14 +1,9 @@
-# Loan Portfolio Analytics — BigQuery + dbt
+# Loan Portfolio Analytics - BigQuery + dbt
 
-A credit-risk analytics warehouse that turns raw lending data into
-decision-ready marts: **DPD buckets, vintage curves (cohort × MOB), rolling
-collections, and segment health KPIs** — built with SQL window functions on
-**BigQuery**, orchestrated by **dbt**, and cross-validated against an
-independent Python ground truth.
-
-> 🇻🇳 Kho phân tích rủi ro tín dụng: từ dữ liệu vay thô → các mart sẵn sàng ra
-> quyết định (DPD, vintage, rolling collection, KPI theo segment), dựng bằng
-> SQL window functions trên BigQuery + dbt, đối chiếu với bản tính Python độc lập.
+This project turns raw lending data into analytics marts: **DPD buckets, vintage
+curves (cohort × MOB), rolling collections, and segment health KPIs**. SQL
+window functions do the math on **BigQuery**. **dbt** runs the pipeline. A
+separate Python script checks every number against ground truth.
 
 **Live links** · 📊 Dashboard: https://datastudio.google.com/s/osH2qKIIang · 📚 dbt docs: _(GitHub Pages — add link)_
 
@@ -26,8 +21,9 @@ data_generator/ (Python, stdlib)        BigQuery (dbt)
   validate_marts_offline.py ── ground-truth cross-check (no cloud) ──┘
 ```
 
-Three layers: **raw** (load as-is) → **staging** (clean/cast/rename, views) →
-**mart** (aggregated tables, query-ready). One `dbt build` rebuilds everything.
+Three layers. **raw** loads the CSVs as-is. **staging** cleans, casts, renames
+(views). **mart** aggregates into query-ready tables. `dbt build` rebuilds the
+whole thing in one command.
 
 ## Tech stack
 
@@ -63,8 +59,8 @@ uv run dbt build          # seed + run + test, one command
 uv run dbt docs generate  # lineage graph + data dictionary
 ```
 
-`~/.dbt/profiles.yml` uses BigQuery + `method: oauth` (run
-`gcloud auth application-default login` first). No credentials are committed.
+`~/.dbt/profiles.yml` uses BigQuery with `method: oauth`. Run
+`gcloud auth application-default login` first. No credentials live in the repo.
 
 ## Data quality / Chất lượng dữ liệu
 
@@ -73,8 +69,8 @@ uv run dbt docs generate  # lineage graph + data dictionary
   - `assert_no_future_payments` — point-in-time integrity (no `paid_date > as_of`).
   - `assert_dpd_and_amounts_valid` — DPD ≥ 0, amounts ≥ 0, no overpayment.
 - **Ground-truth cross-check:** `validate_marts_offline.py` recomputes the marts
-  in pure Python; the numbers match BigQuery exactly — verifying outputs rather
-  than trusting generated SQL.
+  in plain Python. The numbers match BigQuery. I check outputs instead of
+  trusting generated SQL.
 
 ## Results (SEED=42) / Kết quả
 
@@ -88,15 +84,15 @@ DPD buckets: `0` = 3361 · `1-30` = 375 · `31-60` = 34 · `60+` = 183.
 | near_prime | 1,610 | 16.0% | 5.2% | 9.4% |
 | subprime | 714 | 21.3% | 10.5% | 17.1% |
 
-Python validator and BigQuery marts produce identical figures.
+The Python validator and the BigQuery marts return the same figures.
 
 ## Why synthetic data? / Vì sao dùng data tổng hợp?
 
-No public dataset offers installment-level, point-in-time-correct repayment
-histories with controllable risk signals. Generating the data lets us guarantee
-no future leakage, embed a known default gradient, and **prove correctness
-against ground truth** — the exact discipline the role screens for. The same
-dbt pipeline points at a real warehouse unchanged.
+No public dataset gives installment-level, point-in-time-correct repayment
+history with risk signals I can control. So I generate it. That rules out future
+leakage, bakes in a known default gradient, and lets me prove the marts against
+ground truth — the skill this role screens for. Swap the seeds for real
+warehouse tables and the dbt code stays the same.
 
 ---
 
@@ -106,8 +102,8 @@ dbt pipeline points at a real warehouse unchanged.
   computing **DPD buckets, cumulative vintage curves (cohort × MOB), rolling
   collections, and segment delinquency** via CTEs and window functions
   (3.9k loans / 58.9k installments).
-- Enforced data quality with dbt schema tests + a custom **point-in-time
-  integrity** test (no future-payment leakage) and business-rule checks;
-  auto-generated lineage/docs via `dbt docs`.
-- **Cross-validated** every mart against an independent Python ground-truth
-  script — verifying outputs rather than trusting generated SQL.
+- Added dbt schema tests plus a custom **point-in-time integrity** test (no
+  future-payment leakage) and business-rule checks. Lineage and docs generate
+  from `dbt docs`.
+- **Cross-validated** every mart against a separate Python ground-truth script.
+  I check outputs instead of trusting generated SQL.
