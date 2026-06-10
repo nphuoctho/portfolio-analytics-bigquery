@@ -1,8 +1,6 @@
 # Loan Portfolio Analytics (BigQuery + dbt)
 
-A small analytics warehouse for a consumer-lending portfolio. It takes raw loan
-data and builds the marts a credit-risk team actually looks at: days-past-due
-buckets, vintage curves, rolling collections, and delinquency by segment.
+A small analytics warehouse for a consumer-lending portfolio. It takes raw loan data and builds the marts a credit-risk team actually looks at: days-past-due buckets, vintage curves, rolling collections, and delinquency by segment.
 
 Live dashboard: https://datastudio.google.com/s/osH2qKIIang
 
